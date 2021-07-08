@@ -5,6 +5,7 @@ namespace Mariuzzo\LaravelJsLocalization\Generators;
 use InvalidArgumentException;
 use Illuminate\Filesystem\Filesystem as File;
 use Illuminate\Support\Str;
+use Illuminate\Support\Arr;
 use JShrink\Minifier;
 
 /**
@@ -126,6 +127,7 @@ class LangJsGenerator
         }
 
         foreach ($this->file->allFiles($path) as $file) {
+
             $pathName = $file->getRelativePathName();
             $extension = $this->file->extension($pathName);
             if ($extension != 'php' && $extension != 'json') {
@@ -135,8 +137,10 @@ class LangJsGenerator
             if ($this->isMessagesExcluded($pathName)) {
                 continue;
             }
+            //echo '$pathName: '.$pathName."\r\n";
 
             $key = substr($pathName, 0, -4);
+
             $key = str_replace('\\', '.', $key);
             $key = str_replace('/', '.', $key);
 
@@ -144,9 +148,19 @@ class LangJsGenerator
                 $key = $this->getVendorKey($key);
             }
 
+
+
             $fullPath = $path.DIRECTORY_SEPARATOR.$pathName;
             if ($extension == 'php') {
-                $messages[$key] = include $fullPath;
+                Arr::set($messages, $key, include $fullPath);
+                    /*
+                $keyArr = explode('.',$key);
+                foreach($keyArr as $value){
+                    echo '$value: '.$value."\r\n";
+                }*/
+
+
+             //   $messages[$key] = include $fullPath;
             } else {
                 $key = $key.$this->stringsDomain;
                 $fileContent = file_get_contents($fullPath);
