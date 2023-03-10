@@ -7,7 +7,7 @@ use Illuminate\Console\Command;
 use Mariuzzo\LaravelJsLocalization\Generators\LangJsGenerator;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
-
+use Mariuzzo\LaravelJsLocalization\Events\GeneratedEvent;
 /**
  * The LangJsCommand class.
  *
@@ -71,6 +71,8 @@ class LangJsCommand extends Command
 
         if ($this->generator->generate($target, $options)) {
             $this->info("Created: {$target}");
+
+            event(new GeneratedEvent());
 
             return;
         }
